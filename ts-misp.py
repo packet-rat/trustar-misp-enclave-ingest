@@ -479,8 +479,6 @@ class TruStarMISP:
         self.analysis = analysis
         self.sharing_group = sharing_group
         self.publish = publish
-        self.current_events = self.misp.events()
-        self.current_events_infos = [event["info"] for event in self.current_events]
         self.globals_list = globals()
 
     def get_event_id(self, enclave_name=None):
@@ -489,11 +487,8 @@ class TruStarMISP:
         """
         if enclave_name is not None:
             try:
-                return [
-                    (event["id"], event["uuid"])
-                    for event in self.current_events
-                    if enclave_name == event["info"]
-                ][0]
+                event = self.misp.search(eventinfo=enclave_name)
+                return (event[0]["Event"]["id"], event[0]["Event"]["uuid"])
             except Exception:
                 return None, None
         else:
